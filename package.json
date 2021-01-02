@@ -4,7 +4,7 @@
     "description": "LemonScooters provides a electric scooter rental service.",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Microsoft/TypeScript-Node-Starter"
+        "url": "https://github.com/ScreeM92/lemon-scooters-typescript"
     },
     "author": "Mihail Nikov",
     "license": "MIT",
