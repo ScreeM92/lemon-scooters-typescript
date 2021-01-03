@@ -7,6 +7,7 @@ import RideCalculator from "../stream/ride_calculator";
 import Logger from "../util/logger";
 import csv from "fast-csv";
 import ScooterService from "../services/scooter.service";
+import ElasticSearchService from "../services/elasticsearch.service";
 
 /**
  * Execute the stream.
@@ -32,4 +33,34 @@ export const executeStream = (req: Request, res: Response) => {
         Logger.error(error.toString());
         res.json({success: false});
     });
+};
+
+/**
+ * Search valid rides.
+ * @route GET /api/searchRides
+ */
+export const searchRides = async (req: Request, res: Response) => {
+    const options = { index: "rides123", type: "rides_list" } as Record<string, string>;
+
+    if (req.query["q"]) {
+        options.q = req.query["q"] as string; 
+    }
+    const response = await ElasticSearchService.search(options);
+    
+    res.send(response);
+};
+
+/**
+ * Search invalid rides.
+ * @route GET /api/searchErrors
+ */
+export const searchErrors = async (req: Request, res: Response) => {
+    const options = { index: "errors123", type: "errors_list" } as Record<string, string>;
+
+    if (req.query["q"]) {
+        options.q = req.query["q"] as string; 
+    }
+    const response = await ElasticSearchService.search(options);
+    
+    res.send(response);
 };

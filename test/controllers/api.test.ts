@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../src/app";
 import { getRidesPath, getErrorsPath } from "../../src/config/paths";
 import moment from "moment";
-import fs from 'fs';
+import fs from "fs";
 
 describe("GET /api/execute-stream", () => {
     it("should return 200 OK", async (done: jest.DoneCallback) => {

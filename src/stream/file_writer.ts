@@ -3,10 +3,17 @@ import fs from "fs";
 import moment from "moment";
 import JSONStream from "JSONStream";
 import { getRidesPath, getErrorsPath } from "../config/paths";
+import EsClient from '../elasticsearch';
+import Logger from "./../util/logger";
+import ElasticSearchService from "../services/elasticsearch.service";
+import { basename } from 'path';
 
 class FileWriter extends Writable {
   ridesFileWriter: NodeJS.ReadWriteStream;
   errorsFileWriter: NodeJS.ReadWriteStream;
+
+  ridesPath: string;
+  errorsPath: string;
 
   constructor(options: WritableOptions = {}) {
     super({ objectMode: true, ...options });
@@ -15,8 +22,10 @@ class FileWriter extends Writable {
     this.errorsFileWriter = JSONStream.stringify("[", ",", "]");
 
     const timestamp = moment().unix();
-    this.ridesFileWriter.pipe(fs.createWriteStream(getRidesPath(timestamp)));
-    this.errorsFileWriter.pipe(fs.createWriteStream(getErrorsPath(timestamp)));
+    this.ridesPath = getRidesPath(timestamp);
+    this.errorsPath = getErrorsPath(timestamp);
+    this.ridesFileWriter.pipe(fs.createWriteStream(this.ridesPath));
+    this.errorsFileWriter.pipe(fs.createWriteStream(this.errorsPath));
   }
 
   _write(chunk: any, encoding: string, callback: Function) {
@@ -25,8 +34,10 @@ class FileWriter extends Writable {
 
     if (isValid) {
       this.ridesFileWriter.write(chunk);
+      ElasticSearchService.addRideDocument({fileName: basename(this.ridesPath), ...chunk});
     } else {
       this.errorsFileWriter.write(chunk);
+      ElasticSearchService.addErrorDocument({fileName: basename(this.errorsPath), ...chunk});
     }
 
     callback();
