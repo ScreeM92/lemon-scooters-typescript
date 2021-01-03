@@ -4,10 +4,21 @@ import { ElasticSearchEnum } from '../common/enums/elasticsearch.enum';
 
 class ElasticSearchService {
 
-  async search(options: Record<string, string>): Promise<any> {
+  async search(options: Record<string, any>): Promise<any> {
     try {
         const response = await esClient.search(options);
         return response.body.hits.hits;
+    } 
+    catch (error) {
+        Logger.error(error.toString());
+        return [];
+    }
+  }
+
+  async count(options: Record<string, any>): Promise<any> {
+    try {
+        const response = await esClient.count(options);
+        return response.body.count;
     } 
     catch (error) {
         Logger.error(error.toString());

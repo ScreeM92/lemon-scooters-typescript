@@ -40,14 +40,16 @@ export const executeStream = (req: Request, res: Response) => {
  * @route GET /api/searchRides
  */
 export const searchRides = async (req: Request, res: Response) => {
-    const options = { index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE } as Record<string, string>;
+    const options = { index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE } as Record<string, any>;
 
     if (req.query["q"]) {
         options.q = req.query["q"] as string; 
     }
-    const response = await ElasticSearchService.search(options);
-    
-    res.json(response);
+
+    const response = await ElasticSearchService.search({from: req.query["from"], size: req.query["size"], ...options});
+    const count = await ElasticSearchService.count(options);
+
+    res.json({rows: response, totalCount: count});
 };
 
 /**
@@ -58,9 +60,10 @@ export const searchErrors = async (req: Request, res: Response) => {
     const options = { index: ElasticSearchEnum.ERRORS_INDEX, type: ElasticSearchEnum.ERRORS_TYPE } as Record<string, string>;
 
     if (req.query["q"]) {
-        options.q = req.query["q"] as string; 
+        options.q = req.query["q"] as string;
     }
-    const response = await ElasticSearchService.search(options);
-    
-    res.json(response);
+    const response = await ElasticSearchService.search({from: req.query["from"], size: req.query["size"], ...options});
+    const count = await ElasticSearchService.count(options);
+
+    res.json({rows: response, totalCount: count});
 };
