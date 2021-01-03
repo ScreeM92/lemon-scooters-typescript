@@ -8,7 +8,7 @@ import Logger from "../util/logger";
 import csv from "fast-csv";
 import ScooterService from "../services/scooter.service";
 import ElasticSearchService from "../services/elasticsearch.service";
-
+import { ElasticSearchEnum } from '../common/enums/elasticsearch.enum';
 /**
  * Execute the stream.
  * @route GET /api/execute-stream
@@ -40,14 +40,14 @@ export const executeStream = (req: Request, res: Response) => {
  * @route GET /api/searchRides
  */
 export const searchRides = async (req: Request, res: Response) => {
-    const options = { index: "rides123", type: "rides_list" } as Record<string, string>;
+    const options = { index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE } as Record<string, string>;
 
     if (req.query["q"]) {
         options.q = req.query["q"] as string; 
     }
     const response = await ElasticSearchService.search(options);
     
-    res.send(response);
+    res.json(response);
 };
 
 /**
@@ -55,12 +55,12 @@ export const searchRides = async (req: Request, res: Response) => {
  * @route GET /api/searchErrors
  */
 export const searchErrors = async (req: Request, res: Response) => {
-    const options = { index: "errors123", type: "errors_list" } as Record<string, string>;
+    const options = { index: ElasticSearchEnum.ERRORS_INDEX, type: ElasticSearchEnum.ERRORS_TYPE } as Record<string, string>;
 
     if (req.query["q"]) {
         options.q = req.query["q"] as string; 
     }
     const response = await ElasticSearchService.search(options);
     
-    res.send(response);
+    res.json(response);
 };

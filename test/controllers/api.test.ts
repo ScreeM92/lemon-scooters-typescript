@@ -3,12 +3,25 @@ import app from "../../src/app";
 import { getRidesPath, getErrorsPath } from "../../src/config/paths";
 import moment from "moment";
 import fs from "fs";
+import ElasticSearchService from '../../src/services/elasticsearch.service';
+import SpyInstance = jest.SpyInstance;
 
 describe("GET /api/execute-stream", () => {
     it("should return 200 OK", async (done: jest.DoneCallback) => {
-        const timestamp = moment().unix();
+        const spyAddRideDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addRideDocument").mockImplementation(() => {
+            return new Promise((resolve, reject) => {
+                resolve(true);
+            });
+        });
+        const spyAddErrorDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addErrorDocument").mockImplementation(() => {
+            return new Promise((resolve, reject) => {
+                resolve(true);
+            });
+        });
 
+        const timestamp = moment().unix();
         const response: request.Response = await request(app).get("/api/execute-stream");
+
         expect(response.body).toEqual({ success: true });
         expect(response.status).toBe(200);
 
@@ -21,6 +34,10 @@ describe("GET /api/execute-stream", () => {
         // delete created files
         fs.unlinkSync(ridesPath);
         fs.unlinkSync(errorsPath);
+
+        // restore mocks
+        spyAddRideDoc.mockRestore();
+        spyAddErrorDoc.mockRestore();
 
         done();
     });

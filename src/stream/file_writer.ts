@@ -3,8 +3,6 @@ import fs from "fs";
 import moment from "moment";
 import JSONStream from "JSONStream";
 import { getRidesPath, getErrorsPath } from "../config/paths";
-import EsClient from '../elasticsearch';
-import Logger from "./../util/logger";
 import ElasticSearchService from "../services/elasticsearch.service";
 import { basename } from 'path';
 

@@ -1,5 +1,6 @@
 import Logger from "./../util/logger";
 import esClient from "../elasticsearch";
+import { ElasticSearchEnum } from '../common/enums/elasticsearch.enum';
 
 class ElasticSearchService {
 
@@ -16,23 +17,21 @@ class ElasticSearchService {
 
   async addRideDocument(body: any): Promise<any> {
     try {
-        await esClient.index({index: 'rides123', type: 'rides_list', body});
-        return true;
-    } 
+      return await esClient.index({index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE, body});
+    }
     catch (error) {
-        Logger.error(error.toString());
-        return false;
+      Logger.error(error.toString());
+      return false;
     }
   }
 
   async addErrorDocument(body: any): Promise<any> {
     try {
-        await esClient.index({index: 'errors123', type: 'errors_list', body});
-        return true;
+      return await esClient.index({index: ElasticSearchEnum.ERRORS_INDEX, type: ElasticSearchEnum.ERRORS_TYPE, body});
     } 
     catch (error) {
-        Logger.error(error.toString());
-        return false;
+      Logger.error(error.toString());
+      return false;
     }
   }
 }
