@@ -21,14 +21,3 @@ module.exports = {
     setupFiles: ["dotenv/config"],
     clearMocks: true
 };
-
-
-
-
-// export default {
-//   clearMocks: true,
-//   coverageDirectory: "coverage",
-//   testEnvironment: 'jest-environment-node',
-//   transform: {},
-//   setupFiles: ["dotenv/config"]
-// };
