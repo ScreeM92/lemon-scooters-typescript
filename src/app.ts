@@ -39,5 +39,6 @@ if (fs.existsSync(".env")) {
 app.get("/api/execute-stream", apiController.executeStream);
 app.get("/api/search-rides", apiController.searchRides);
 app.get("/api/search-errors", apiController.searchErrors);
+app.get("/api/customers", apiController.customerAggregation);
 
 export default app;

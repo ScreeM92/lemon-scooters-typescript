@@ -26,6 +26,63 @@ class ElasticSearchService {
     }
   }
 
+  async searchCustomerGroup(options: Record<string, any>, customerId: string): Promise<any> {
+    try {
+        let filter = {"match_all": {}} as any;
+        if (customerId) {
+          filter = { "term": { "customerId.keyword": customerId}};
+        }
+
+        const response = await esClient.search(
+          {
+            ...options,
+            "body": {
+              "aggs": {
+                "customer_group": {
+                  "terms": {
+                    "field": "customerId.keyword",
+                    "order": {
+                      "price": "desc"
+                    }
+                  },
+                  "aggs": {
+                    "price": {
+                      "sum": {
+                        "field": "price"
+                      }
+                    }
+                  }
+                }
+              },
+              "size": 0,
+              "stored_fields": [
+                "*"
+              ],
+              "script_fields": {},
+              "docvalue_fields": [],
+              "_source": {
+                "excludes": []
+              },
+              "query": {
+                "bool": {
+                  "must": [],
+                  "filter": [filter],
+                  "should": [],
+                  "must_not": []
+                }
+              }
+            }
+          }
+        );
+
+        return response.body.aggregations.customer_group.buckets;
+    } 
+    catch (error) {
+        Logger.error(error.toString());
+        return [];
+    }
+  }
+
   async addRideDocument(body: any): Promise<any> {
     try {
       return await esClient.index({index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE, body});
