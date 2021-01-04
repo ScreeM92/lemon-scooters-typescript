@@ -9,6 +9,7 @@ import csv from "fast-csv";
 import ScooterService from "../services/scooter.service";
 import ElasticSearchService from "../services/elasticsearch.service";
 import { ElasticSearchEnum } from '../common/enums/elasticsearch.enum';
+
 /**
  * Execute the stream.
  * @route GET /api/execute-stream
