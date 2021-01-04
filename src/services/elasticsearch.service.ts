@@ -1,6 +1,5 @@
 import Logger from "./../util/logger";
 import esClient from "../elasticsearch";
-import { ElasticSearchEnum } from '../common/enums/elasticsearch.enum';
 
 class ElasticSearchService {
 
@@ -26,7 +25,7 @@ class ElasticSearchService {
     }
   }
 
-  async searchCustomerGroup(options: Record<string, any>, customerId: string): Promise<any> {
+  async customerAggregation(options: Record<string, any>, customerId: string = ""): Promise<any> {
     try {
         let filter = {"match_all": {}} as any;
         if (customerId) {
@@ -78,25 +77,15 @@ class ElasticSearchService {
         return response.body.aggregations.customer_group.buckets;
     } 
     catch (error) {
-        Logger.error(error.toString());
-        return [];
-    }
-  }
-
-  async addRideDocument(body: any): Promise<any> {
-    try {
-      return await esClient.index({index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE, body});
-    }
-    catch (error) {
       Logger.error(error.toString());
-      return false;
+      return [];
     }
   }
 
-  async addErrorDocument(body: any): Promise<any> {
+  async addDocument(options: any): Promise<any> {
     try {
-      return await esClient.index({index: ElasticSearchEnum.ERRORS_INDEX, type: ElasticSearchEnum.ERRORS_TYPE, body});
-    } 
+      return await esClient.index(options);
+    }
     catch (error) {
       Logger.error(error.toString());
       return false;

@@ -71,7 +71,7 @@ export const searchErrors = async (req: Request, res: Response) => {
 
 export const customerAggregation = async (req: Request, res: Response) => {
     const options = { index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE } as Record<string, string>;
-    const rows = await ElasticSearchService.searchCustomerGroup(options, req.query["customerId"] as string);
+    const rows = await ElasticSearchService.customerAggregation(options, req.query["customerId"] as string);
 
     res.json(rows);
 };

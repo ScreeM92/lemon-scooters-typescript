@@ -18,17 +18,11 @@ describe("GET /api/execute-stream", () => {
     it("should return 200 OK and successfully execute the stream", async (done: jest.DoneCallback) => {
         sleep(1001);
 
-        const spyAddRideDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addRideDocument").mockImplementation(() => {
+        const spyAddRideDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addDocument").mockImplementation(() => {
             return new Promise((resolve, reject) => {
                 resolve(true);
             });
         });
-        const spyAddErrorDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addErrorDocument").mockImplementation(() => {
-            return new Promise((resolve, reject) => {
-                resolve(true);
-            });
-        });
-
         
         const response: request.Response = await request(app).get("/api/execute-stream");
         const timestamp = moment().unix();
@@ -48,7 +42,6 @@ describe("GET /api/execute-stream", () => {
 
         // restore mocks
         spyAddRideDoc.mockRestore();
-        spyAddErrorDoc.mockRestore();
 
         done();
     });

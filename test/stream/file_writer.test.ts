@@ -25,7 +25,7 @@ describe("FileWriter", () => {
       it("should create a file for valid rides and empty file for invalid rides", async (done: jest.DoneCallback) => {
         await sleep(1001);
 
-        const spyAddRideDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addRideDocument").mockImplementation(() => {
+        const spyAddRideDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addDocument").mockImplementation(() => {
           return new Promise((resolve, reject) => {
             resolve(true);
           });
@@ -56,16 +56,12 @@ describe("FileWriter", () => {
       it("should check if the data in the files is valid", async (done: jest.DoneCallback) => {
         await sleep(1001);
 
-        const spyAddRideDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addRideDocument").mockImplementation(() => {
+        const spyAddDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addDocument").mockImplementation(() => {
           return new Promise((resolve, reject) => {
             resolve(true);
           });
         });
-        const spyAddErrorDoc: SpyInstance = jest.spyOn(ElasticSearchService, "addErrorDocument").mockImplementation(() => {
-          return new Promise((resolve, reject) => {
-            resolve(true);
-          });
-        });
+
         const timestamp = moment().unix();
         StreamTest[version].fromObjects(cloneDeep(validAndInvalidRides))
             .pipe(new FileWriter())
@@ -94,8 +90,7 @@ describe("FileWriter", () => {
                 fs.unlinkSync(errorsPath);
 
                 // restore mocks
-                spyAddRideDoc.mockRestore();
-                spyAddErrorDoc.mockRestore();
+                spyAddDoc.mockRestore();
 
                 done();
             });
