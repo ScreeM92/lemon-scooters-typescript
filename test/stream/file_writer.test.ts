@@ -34,8 +34,6 @@ describe("FileWriter", () => {
         StreamTest[version].fromObjects(cloneDeep(validRides))
             .pipe(new FileWriter())
             .on("finish", () => {
-                
-
                 const ridesPath = getRidesPath(timestamp);
                 const errorsPath = getErrorsPath(timestamp);
 

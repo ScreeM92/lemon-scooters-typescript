@@ -69,6 +69,10 @@ export const searchErrors = async (req: Request, res: Response) => {
     res.json({rows: response, totalCount: count});
 };
 
+/**
+ * Aggregate customers.
+ * @route GET /api/customers
+ */
 export const customerAggregation = async (req: Request, res: Response) => {
     const options = { index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE } as Record<string, string>;
     const rows = await ElasticSearchService.customerAggregation(options, req.query["customerId"] as string);
