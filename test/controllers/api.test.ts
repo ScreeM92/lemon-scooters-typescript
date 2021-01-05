@@ -1,10 +1,10 @@
 import request from "supertest";
 import app from "../../src/app";
-import { getRidesPath, getErrorsPath } from "../../src/config/paths";
+import { getRidesPath, getErrorsPath, getAggPath } from "../../src/config/paths";
 import moment from "moment";
 import fs from "fs";
-import ElasticSearchService from '../../src/services/elasticsearch.service';
-import ScooterService from '../../src/services/scooter.service';
+import ElasticSearchService from "../../src/services/elasticsearch.service";
+import ScooterService from "../../src/services/scooter.service";
 import SpyInstance = jest.SpyInstance;
 
 function sleep(ms: number): Promise<any> {
@@ -31,13 +31,16 @@ describe("GET /api/execute-stream", () => {
 
         const ridesPath = getRidesPath(timestamp);
         const errorsPath = getErrorsPath(timestamp);
+        const aggPath = getAggPath(timestamp);
 
         expect(fs.existsSync(ridesPath)).toBeTruthy();
         expect(fs.existsSync(errorsPath)).toBeTruthy();
+        expect(fs.existsSync(aggPath)).toBeTruthy();
 
         // delete created files
         fs.unlinkSync(ridesPath);
         fs.unlinkSync(errorsPath);
+        fs.unlinkSync(aggPath);
 
         // restore mocks
         spyAddRideDoc.mockRestore();

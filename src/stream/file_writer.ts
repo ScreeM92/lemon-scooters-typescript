@@ -4,8 +4,8 @@ import moment from "moment";
 import JSONStream from "JSONStream";
 import { getRidesPath, getErrorsPath } from "../config/paths";
 import ElasticSearchService from "../services/elasticsearch.service";
-import { basename } from 'path';
-import { ElasticSearchEnum } from '../common/enums/elasticsearch.enum';
+import { basename } from "path";
+import { ElasticSearchEnum } from "../common/enums/elasticsearch.enum";
 
 class FileWriter extends Writable {
   ridesFileWriter: NodeJS.ReadWriteStream;
@@ -13,6 +13,7 @@ class FileWriter extends Writable {
 
   ridesPath: string;
   errorsPath: string;
+  timestamp: number;
 
   constructor(options: WritableOptions = {}) {
     super({ objectMode: true, ...options });
@@ -20,23 +21,23 @@ class FileWriter extends Writable {
     this.ridesFileWriter = JSONStream.stringify("[", ",", "]");
     this.errorsFileWriter = JSONStream.stringify("[", ",", "]");
 
-    const timestamp = moment().unix();
-    this.ridesPath = getRidesPath(timestamp);
-    this.errorsPath = getErrorsPath(timestamp);
+    this.timestamp = moment().unix();
+    this.ridesPath = getRidesPath(this.timestamp);
+    this.errorsPath = getErrorsPath(this.timestamp);
     this.ridesFileWriter.pipe(fs.createWriteStream(this.ridesPath));
     this.errorsFileWriter.pipe(fs.createWriteStream(this.errorsPath));
   }
 
-  _write(chunk: any, encoding: string, callback: Function) {
+  async _write(chunk: any, encoding: string, callback: Function) {
     const isValid = chunk.isValid;
     delete chunk.isValid;
 
     if (isValid) {
       this.ridesFileWriter.write(chunk);
-      ElasticSearchService.addDocument({index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE, body: { fileName: basename(this.ridesPath), ...chunk }});
+      await ElasticSearchService.addDocument({index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE, body: { fileName: basename(this.ridesPath), ...chunk }});
     } else {
       this.errorsFileWriter.write(chunk);
-      ElasticSearchService.addDocument({index: ElasticSearchEnum.ERRORS_INDEX, type: ElasticSearchEnum.ERRORS_TYPE, body: { fileName: basename(this.errorsPath), ...chunk }});
+      await ElasticSearchService.addDocument({index: ElasticSearchEnum.ERRORS_INDEX, type: ElasticSearchEnum.ERRORS_TYPE, body: { fileName: basename(this.errorsPath), ...chunk }});
     }
 
     callback();
