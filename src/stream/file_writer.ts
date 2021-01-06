@@ -34,9 +34,11 @@ class FileWriter extends Writable {
 
     if (isValid) {
       this.ridesFileWriter.write(chunk);
+      // make it async when there is a cron
       await ElasticSearchService.addDocument({index: ElasticSearchEnum.RIDES_INDEX, type: ElasticSearchEnum.RIDES_TYPE, body: { fileName: basename(this.ridesPath), ...chunk }});
     } else {
       this.errorsFileWriter.write(chunk);
+      // make it async when there is a cron
       await ElasticSearchService.addDocument({index: ElasticSearchEnum.ERRORS_INDEX, type: ElasticSearchEnum.ERRORS_TYPE, body: { fileName: basename(this.errorsPath), ...chunk }});
     }
 
