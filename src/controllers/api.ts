@@ -30,8 +30,7 @@ export const executeStream = (req: Request, res: Response) => {
                 .pipe(csvParser)
                 .pipe(new RideValidator())
                 .pipe(new RideCalculator(priceRate))
-                .pipe(new FileWriter()
-            );
+                .pipe(new FileWriter());
 
         // it should run in a cron 
         stream.on("finish", async () => {
